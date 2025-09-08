@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="da">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>To Do App</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <!-- Header -->
+  <header>
+    <h1>TO DO</h1>
+    <button id="menuBtn">☰</button>
+  </header>
+
+  <!-- Side menu -->
+  <nav id="sideMenu">
+    <button id="lightModeBtn">Light Mode</button>
+    <button id="darkModeBtn">Dark Mode</button>
+  </nav>
+
+  <!-- Main content -->
+  <main id="todoList">
+    <!-- Opgaver kommer ind via JS -->
+  </main>
+
+  <!-- Footer -->
+  <footer>
+    <button id="newTaskBtn">New</button>
+  </footer>
+
+  <!-- Modal til oprette/redigere -->
+  <div id="taskModal" class="modal hidden">
+    <div class="modal-content">
+      <h2 id="modalTitle">Ny Opgave</h2>
+      <label for="taskTitle">Titel:</label>
+      <input type="text" id="taskTitle">
+      <label for="taskDesc">Beskrivelse:</label>
+      <textarea id="taskDesc"></textarea>
+      <div class="modal-buttons">
+        <button id="saveTaskBtn">Gem</button>
+        <button id="cancelTaskBtn">Fortryd</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal til sletning -->
+  <div id="deleteModal" class="modal hidden">
+    <div class="modal-content">
+      <p>Er du sikker på at du vil slette?</p>
+      <button id="confirmDeleteBtn">Ja</button>
+      <button id="cancelDeleteBtn">Nej</button>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
