@@ -1,126 +1,189 @@
-let tasks = JSON.parse(localStorage.getItem("tasks")) || [];
-let editIndex = null;
-let deleteIndex = null;
+// MODEL
+const Model = {
+  tasks: JSON.parse(localStorage.getItem("tasks")) || [],
+  editIndex: null,
+  deleteIndex: null,
 
-const todoList = document.getElementById("todoList");
-const newTaskBtn = document.getElementById("newTaskBtn");
-const taskModal = document.getElementById("taskModal");
-const deleteModal = document.getElementById("deleteModal");
+  save() {
+    localStorage.setItem("tasks", JSON.stringify(this.tasks));
+  },
 
-const taskTitle = document.getElementById("taskTitle");
-const taskDesc = document.getElementById("taskDesc");
-const saveTaskBtn = document.getElementById("saveTaskBtn");
-const cancelTaskBtn = document.getElementById("cancelTaskBtn");
+  addTask(title, desc) {
+    this.tasks.push({ title, desc, done: false });
+    this.save();
+  },
 
-const confirmDeleteBtn = document.getElementById("confirmDeleteBtn");
-const cancelDeleteBtn = document.getElementById("cancelDeleteBtn");
+  updateTask(index, title, desc) {
+    this.tasks[index] = { ...this.tasks[index], title, desc };
+    this.save();
+  },
 
-const menuBtn = document.getElementById("menuBtn");
-const sideMenu = document.getElementById("sideMenu");
+  toggleTask(index) {
+    this.tasks[index].done = !this.tasks[index].done;
+    this.save();
+  },
 
-// Render tasks
-function renderTasks() {
-  todoList.innerHTML = "";
-  tasks.forEach((task, index) => {
-    const taskDiv = document.createElement("div");
-    taskDiv.className = "task";
+  deleteTask(index) {
+    this.tasks.splice(index, 1);
+    this.save();
+  },
+};
 
-    taskDiv.innerHTML = `
-      <div class="task-left">
-        <input type="checkbox" ${task.done ? "checked" : ""}>
-        <div class="task-text">
-          <strong>${task.title}</strong><br>
-          <small>${task.desc}</small>
+// VIEW
+const View = {
+  elements: {
+    todoList: document.getElementById("todoList"),
+    newTaskBtn: document.getElementById("newTaskBtn"),
+    taskModal: document.getElementById("taskModal"),
+    deleteModal: document.getElementById("deleteModal"),
+    taskTitle: document.getElementById("taskTitle"),
+    taskDesc: document.getElementById("taskDesc"),
+    saveTaskBtn: document.getElementById("saveTaskBtn"),
+    cancelTaskBtn: document.getElementById("cancelTaskBtn"),
+    confirmDeleteBtn: document.getElementById("confirmDeleteBtn"),
+    cancelDeleteBtn: document.getElementById("cancelDeleteBtn"),
+    menuBtn: document.getElementById("menuBtn"),
+    sideMenu: document.getElementById("sideMenu"),
+    lightModeBtn: document.getElementById("lightModeBtn"),
+    darkModeBtn: document.getElementById("darkModeBtn"),
+  },
+
+  renderTasks(tasks) {
+    this.elements.todoList.innerHTML = "";
+    tasks.forEach((task, index) => {
+      const taskDiv = document.createElement("div");
+      taskDiv.className = "task";
+
+      taskDiv.innerHTML = `
+        <div class="task-left">
+          <input type="checkbox" ${task.done ? "checked" : ""}>
+          <div class="task-text">
+            <strong>${task.title}</strong><br>
+            <small>${task.desc}</small>
+          </div>
         </div>
-      </div>
-      <button class="deleteBtn">🗑</button>
-    `;
+        <button class="deleteBtn">🗑</button>
+      `;
 
-    // toggle færdig
-    taskDiv.querySelector("input").addEventListener("change", () => {
-      task.done = !task.done;
-      saveTasks();
+      // hæft event på elementerne
+      taskDiv.querySelector("input").addEventListener("change", () => {
+        Controller.toggleTask(index);
+      });
+
+      taskDiv.querySelector(".task-text").addEventListener("click", () => {
+        Controller.openEditTask(index);
+      });
+
+      taskDiv.querySelector(".deleteBtn").addEventListener("click", () => {
+        Controller.openDeleteTask(index);
+      });
+
+      this.elements.todoList.appendChild(taskDiv);
+    });
+  },
+
+  showTaskModal(title = "", desc = "") {
+    this.elements.taskTitle.value = title;
+    this.elements.taskDesc.value = desc;
+    this.elements.taskModal.classList.remove("hidden");
+  },
+
+  hideTaskModal() {
+    this.elements.taskModal.classList.add("hidden");
+  },
+
+  showDeleteModal() {
+    this.elements.deleteModal.classList.remove("hidden");
+  },
+
+  hideDeleteModal() {
+    this.elements.deleteModal.classList.add("hidden");
+  },
+};
+
+// CONTROLLER
+const Controller = {
+  init() {
+    // render tasks første gang
+    View.renderTasks(Model.tasks);
+
+    // knapper
+    View.elements.newTaskBtn.addEventListener("click", () => {
+      Model.editIndex = null;
+      View.showTaskModal();
     });
 
-    // åben rediger modal
-    taskDiv.querySelector(".task-text").addEventListener("click", () => {
-      editIndex = index;
-      taskTitle.value = task.title;
-      taskDesc.value = task.desc;
-      taskModal.classList.remove("hidden");
+    View.elements.saveTaskBtn.addEventListener("click", () => {
+      const title = View.elements.taskTitle.value.trim();
+      const desc = View.elements.taskDesc.value.trim();
+      if (!title) return;
+
+      if (Model.editIndex !== null) {
+        Model.updateTask(Model.editIndex, title, desc);
+      } else {
+        Model.addTask(title, desc);
+      }
+      View.renderTasks(Model.tasks);
+      View.hideTaskModal();
     });
 
-    // slet knap
-    taskDiv.querySelector(".deleteBtn").addEventListener("click", () => {
-      deleteIndex = index;
-      deleteModal.classList.remove("hidden");
+    View.elements.cancelTaskBtn.addEventListener("click", () => {
+      View.hideTaskModal();
     });
 
-    todoList.appendChild(taskDiv);
-  });
-}
+    View.elements.confirmDeleteBtn.addEventListener("click", () => {
+      Model.deleteTask(Model.deleteIndex);
+      View.renderTasks(Model.tasks);
+      View.hideDeleteModal();
+    });
 
-function saveTasks() {
-  localStorage.setItem("tasks", JSON.stringify(tasks));
-  renderTasks();
-}
+    View.elements.cancelDeleteBtn.addEventListener("click", () => {
+      View.hideDeleteModal();
+    });
 
-// Ny opgave
-newTaskBtn.addEventListener("click", () => {
-  editIndex = null;
-  taskTitle.value = "";
-  taskDesc.value = "";
-  taskModal.classList.remove("hidden");
-});
+    // menu
+    View.elements.menuBtn.addEventListener("click", (e) => {
+      e.stopPropagation();
+      View.elements.sideMenu.classList.toggle("show");
+    });
 
-// Gem opgave
-saveTaskBtn.addEventListener("click", () => {
-  const title = taskTitle.value.trim();
-  const desc = taskDesc.value.trim();
-  if (!title) return;
+    document.addEventListener("click", (e) => {
+      if (
+        !View.elements.sideMenu.contains(e.target) &&
+        !View.elements.menuBtn.contains(e.target)
+      ) {
+        View.elements.sideMenu.classList.remove("show");
+      }
+    });
 
-  if (editIndex !== null) {
-    tasks[editIndex] = { title, desc, done: tasks[editIndex].done };
-  } else {
-    tasks.push({ title, desc, done: false });
-  }
+    // tema
+    View.elements.lightModeBtn.addEventListener("click", () => {
+      document.body.style.background = "#f5f5f5";
+    });
 
-  saveTasks();
-  taskModal.classList.add("hidden");
-});
+    View.elements.darkModeBtn.addEventListener("click", () => {
+      document.body.style.background = "#222";
+      document.querySelectorAll(".task").forEach((t) => {
+        t.style.background = "#555";
+      });
+    });
+  },
 
-// Fortryd
-cancelTaskBtn.addEventListener("click", () => {
-  taskModal.classList.add("hidden");
-});
+  toggleTask(index) {
+    Model.toggleTask(index);
+    View.renderTasks(Model.tasks);
+  },
 
-// Slet bekræft
-confirmDeleteBtn.addEventListener("click", () => {
-  tasks.splice(deleteIndex, 1);
-  saveTasks();
-  deleteModal.classList.add("hidden");
-});
+  openEditTask(index) {
+    Model.editIndex = index;
+    const task = Model.tasks[index];
+    View.showTaskModal(task.title, task.desc);
+  },
 
-// Slet nej
-cancelDeleteBtn.addEventListener("click", () => {
-  deleteModal.classList.add("hidden");
-});
+  openDeleteTask(index) {
+    Model.deleteIndex = index;
+    View.showDeleteModal();
+  },
+};
 
-// Menu
-menuBtn.addEventListener("click", () => {
-  sideMenu.classList.toggle("show");
-});
-
-// Dark/Light mode
-document.getElementById("lightModeBtn").addEventListener("click", () => {
-  document.body.style.background = "#f5f5f5";
-});
-document.getElementById("darkModeBtn").addEventListener("click", () => {
-  document.body.style.background = "#222";
-  document.querySelectorAll(".task").forEach(t => {
-    t.style.background = "#555";
-  });
-});
-
-// Start
-renderTasks();
+Controller.init();
