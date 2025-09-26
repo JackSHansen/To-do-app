@@ -1,0 +1,28 @@
+@use 'variables';
+@use 'mixins';
+header {
+  top: 0;
+  left: 0;
+  width: 100%;
+  background: variables.$primary-color;
+  color: variables.$text-color;
+  position: fixed;
+  z-index: 10;
+  @include mixins.flex-center;
+
+  h1 {
+    flex-grow: 1;
+    text-align: center;
+    margin: 0;
+    font-size: 1.3rem;
+  }
+
+  #menuBtn {
+    position: absolute;
+    right: 15px;
+    background: none;
+    border: none;
+    font-size: 22px;
+    cursor: pointer;
+  }
+}

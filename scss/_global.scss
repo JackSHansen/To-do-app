@@ -1,0 +1,13 @@
+@use 'variables';
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: variables.$background-color;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.hidden {
+  display: none;
+}

@@ -1,0 +1,46 @@
+@use 'mixins';
+@include mixins.respond(tablet) {
+  main {
+    max-width: 600px;
+    margin: 0 auto;
+  }
+
+  .task {
+    font-size: 1.1rem;
+  }
+
+  #newTaskBtn {
+    padding: 16px;
+    font-size: 1.2rem;
+  }
+}
+
+@include mixins.respond(laptop) {
+  main {
+    max-width: 800px;
+  }
+
+  header h1 {
+    font-size: 1.6rem;
+  }
+
+  .task {
+    font-size: 1.2rem;
+    padding: 15px;
+  }
+
+  #newTaskBtn {
+    padding: 18px;
+    font-size: 1.3rem;
+  }
+}
+
+@include mixins.respond(desktop) {
+  main {
+    max-width: 1000px;
+  }
+
+  .task {
+    font-size: 1.3rem;
+  }
+}

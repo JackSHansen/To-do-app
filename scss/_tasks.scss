@@ -1,0 +1,29 @@
+@use 'variables';
+@use 'mixins';
+.task {
+  background: variables.$primary-color;
+  margin: 10px 0;
+  padding: 12px;
+  border-radius: 10px;
+  @include mixins.flex-center;
+  justify-content: space-between;
+  @include mixins.box-shadow;
+
+  &-left {
+    @include mixins.flex-center;
+    gap: 8px;
+  }
+
+  input[type="checkbox"] {
+    width: 20px;
+    height: 20px;
+    cursor: pointer;
+  }
+
+  .deleteBtn {
+    cursor: pointer;
+    background: none;
+    border: none;
+    font-size: 18px;
+  }
+}
