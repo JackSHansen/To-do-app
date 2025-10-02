@@ -1,0 +1,16 @@
+export const elements = {
+  todoList: document.getElementById("todoList"),
+  newTaskBtn: document.getElementById("newTaskBtn"),
+  taskModal: document.getElementById("taskModal"),
+  deleteModal: document.getElementById("deleteModal"),
+  taskTitle: document.getElementById("taskTitle"),
+  taskDesc: document.getElementById("taskDesc"),
+  saveTaskBtn: document.getElementById("saveTaskBtn"),
+  cancelTaskBtn: document.getElementById("cancelTaskBtn"),
+  confirmDeleteBtn: document.getElementById("confirmDeleteBtn"),
+  cancelDeleteBtn: document.getElementById("cancelDeleteBtn"),
+  menuBtn: document.getElementById("menuBtn"),
+  sideMenu: document.getElementById("sideMenu"),
+  lightModeBtn: document.getElementById("lightModeBtn"),
+  darkModeBtn: document.getElementById("darkModeBtn"),
+};
